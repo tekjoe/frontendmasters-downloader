@@ -1,0 +1,25 @@
+# Progress Log
+Run: 33fb3bea-dfc5-4ce0-b829-12ec0a7a7844
+Task: Build Frontend Masters video downloader
+Started: 2026-02-11
+
+## Codebase Patterns
+- ES modules ("type": "module" in package.json)
+- Use fs-extra for enhanced file operations
+- Node.js built-in test runner (node --test)
+- Tests live in test/ directory with .test.js suffix
+
+---
+
+## 2026-02-11 10:45 AM - US-001: Create utils.js with helper functions
+- Created src/utils.js with 5 helper functions:
+  - slugify(): converts strings to URL-friendly slugs
+  - sanitizeFilename(): removes illegal chars from filenames  
+  - loadConfig(): reads config/credentials.json
+  - ensureDir(): creates directories recursively
+  - formatDuration(): formats seconds to HH:MM:SS
+- Created test/utils.test.js with 14 test cases covering main and edge cases
+- Created config/credentials.json template
+- **Learnings:** Project uses ES modules, Node.js built-in test runner works well
+
+---
