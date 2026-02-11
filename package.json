@@ -1,0 +1,31 @@
+{
+  "name": "frontendmasters-downloader",
+  "version": "1.0.0",
+  "description": "Download Frontend Masters courses as MP4 files",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "download": "node src/download.js",
+    "dev": "node --inspect src/index.js"
+  },
+  "dependencies": {
+    "puppeteer": "^24.0.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "node-fetch": "^3.3.2",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "keywords": [
+    "frontend-masters",
+    "downloader",
+    "m3u8",
+    "video",
+    "puppeteer"
+  ],
+  "author": "",
+  "license": "MIT"
+}
