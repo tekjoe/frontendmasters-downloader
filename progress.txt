@@ -23,3 +23,16 @@ Started: 2026-02-11
 - **Learnings:** Project uses ES modules, Node.js built-in test runner works well
 
 ---
+
+## 2026-02-11 12:19 PM - US-003: Create extractor.js for M3U8 URL extraction
+- Created src/extractor.js with three main functions:
+  - `extractCourseSlug(courseUrl)` - Extracts course slug from URL for directory naming
+  - `extractCourseData(page, courseUrl)` - Navigates course pages, extracts lesson metadata, captures M3U8 URLs via Puppeteer request interception, returns array of lesson objects
+  - `getCourseMetadata(page, courseUrl)` - Gets course title and lesson count
+- M3U8 URL extraction uses Puppeteer request interception to capture playlist URLs
+- Filters for 1080p quality (prefers URLs containing '1080' or 'index_0_av')
+- Returns lesson objects with {number, title, m3u8Url, duration} properties
+- Created test/extractor.test.js with comprehensive tests (16 tests covering slug extraction, validation, edge cases)
+- **Learnings:** Request interception must be enabled before navigation; using page.on/off pattern for proper cleanup; Puppeteer can intercept network requests to capture media URLs
+
+---
