@@ -24,6 +24,19 @@ Started: 2026-02-11
 
 ---
 
+## 2026-02-11 12:29 PM - US-004: Create downloader.js for segment download
+- Created src/downloader.js with three main functions:
+  - `parseM3U8Playlist(m3u8Content, baseUrl)` - Parses M3U8 playlist content and extracts .ts segment URLs, handles both relative and absolute URLs
+  - `downloadSegment(segmentUrl, cookieString, retryCount)` - Downloads a single segment with retry logic (3 retries by default, exponential backoff)
+  - `downloadLesson(page, lesson, outputDir)` - Downloads all segments for a lesson using authenticated requests
+- Downloads use cookies from Puppeteer page context for authentication
+- Segments saved to temp directory: {outputDir}/.temp/{lesson-number}/ with zero-padded filenames (00000.ts, 00001.ts, etc.)
+- Returns {segmentCount, tempDir} on success
+- Created test/downloader.test.js with comprehensive tests (20 tests covering M3U8 parsing, validation, edge cases)
+- **Learnings:** M3U8 parsing needs to handle relative URLs (resolved against base URL), absolute URLs (used as-is), and filter for .ts extensions only; request retry logic with exponential backoff handles transient network failures
+
+---
+
 ## 2026-02-11 12:19 PM - US-003: Create extractor.js for M3U8 URL extraction
 - Created src/extractor.js with three main functions:
   - `extractCourseSlug(courseUrl)` - Extracts course slug from URL for directory naming
