@@ -23,3 +23,92 @@ Started: 2026-02-11
 - **Learnings:** Project uses ES modules, Node.js built-in test runner works well
 
 ---
+
+## 2026-02-11 12:29 PM - US-004: Create downloader.js for segment download
+- Created src/downloader.js with three main functions:
+  - `parseM3U8Playlist(m3u8Content, baseUrl)` - Parses M3U8 playlist content and extracts .ts segment URLs, handles both relative and absolute URLs
+  - `downloadSegment(segmentUrl, cookieString, retryCount)` - Downloads a single segment with retry logic (3 retries by default, exponential backoff)
+  - `downloadLesson(page, lesson, outputDir)` - Downloads all segments for a lesson using authenticated requests
+- Downloads use cookies from Puppeteer page context for authentication
+- Segments saved to temp directory: {outputDir}/.temp/{lesson-number}/ with zero-padded filenames (00000.ts, 00001.ts, etc.)
+- Returns {segmentCount, tempDir} on success
+- Created test/downloader.test.js with comprehensive tests (20 tests covering M3U8 parsing, validation, edge cases)
+- **Learnings:** M3U8 parsing needs to handle relative URLs (resolved against base URL), absolute URLs (used as-is), and filter for .ts extensions only; request retry logic with exponential backoff handles transient network failures
+
+---
+
+## 2026-02-11 12:19 PM - US-003: Create extractor.js for M3U8 URL extraction
+- Created src/extractor.js with three main functions:
+  - `extractCourseSlug(courseUrl)` - Extracts course slug from URL for directory naming
+  - `extractCourseData(page, courseUrl)` - Navigates course pages, extracts lesson metadata, captures M3U8 URLs via Puppeteer request interception, returns array of lesson objects
+  - `getCourseMetadata(page, courseUrl)` - Gets course title and lesson count
+- M3U8 URL extraction uses Puppeteer request interception to capture playlist URLs
+- Filters for 1080p quality (prefers URLs containing '1080' or 'index_0_av')
+- Returns lesson objects with {number, title, m3u8Url, duration} properties
+- Created test/extractor.test.js with comprehensive tests (16 tests covering slug extraction, validation, edge cases)
+- **Learnings:** Request interception must be enabled before navigation; using page.on/off pattern for proper cleanup; Puppeteer can intercept network requests to capture media URLs
+
+---
+
+## 2026-02-11 1:35 PM - US-005: Create merger.js for MP4 creation
+- Created src/merger.js with two main functions:
+  - `mergeSegments(segmentsDir, outputPath, options)` - Merges TS segments into MP4 using ffmpeg concat demuxer
+  - `checkFfmpeg()` - Verifies ffmpeg is installed and available
+- Merging uses ffmpeg's concat protocol with -bsf:a aac_adtstoasc for proper AAC audio handling
+- Reads segment manifest from segmentDir/manifest.json (fallback to directory listing)
+- Options support: `cleanup` (delete TS files after merge), `hardwareAccel` (macOS videotoolbox)
+- Creates temporary concat.txt file listing all segments in order
+- Cleans up temp files after successful merge
+- Created test/merger.test.js with 11 comprehensive tests covering validation, manifest reading, options
+- **Learnings:** ffmpeg concat demuxer is lossless and fast; segments must be listed in order; AAC bitstream filter needed for proper MP4 compatibility; manifest.json provides metadata for resume capability
+
+---
+
+## 2026-02-11 1:35 PM - US-006 & US-007: Create index.js and CLI with resume capability
+- Created src/index.js with `downloadCourse()` function:
+  - Orchestrates full download workflow
+  - Loads/saves progress to .download-progress.json for resume capability
+  - Tracks completed lessons and skips already downloaded
+  - Integrates all modules: auth, extractor, downloader, merger
+  - Cleans up temp files after each lesson (unless --keep-temp)
+- Created src/cli.js with argument parsing:
+  - Supports --email/-e, --password/-p, --output/-o, --keep-temp flags
+  - Supports FEMAIL and FPASS environment variables
+  - Shows help with --help
+- Resume capability automatically saves progress after each lesson
+- On re-run, checks progress file and skips completed lessons
+- **Learnings:** Progress tracking enables seamless resume; CLI should support both args and env vars for flexibility
+
+---
+
+## 2026-02-11 1:35 PM - US-008 & US-009: Error handling and README update
+- Added comprehensive error handling in all modules:
+  - Input validation with descriptive error messages
+  - Try-catch blocks with graceful degradation
+  - Retry logic for network operations
+  - ffmpeg availability check with helpful install instructions
+- Updated README.md with:
+  - Prerequisites (Node.js, ffmpeg)
+  - Installation instructions for all platforms
+  - Usage examples (basic, advanced, environment variables)
+  - Output structure documentation
+  - Troubleshooting section
+  - Technical details about how it works
+- Updated package.json with CLI bin entry
+- **Learnings:** Good documentation is essential for CLI tools; helpful error messages save debugging time
+
+---
+
+## Summary
+All 9 user stories completed:
+- ✅ US-001: utils.js with helper functions
+- ✅ US-002: auth.js for Puppeteer authentication  
+- ✅ US-003: extractor.js for M3U8 URL extraction
+- ✅ US-004: downloader.js for segment download
+- ✅ US-005: merger.js for MP4 creation
+- ✅ US-006: index.js CLI entry point
+- ✅ US-007: Resume capability for partial downloads
+- ✅ US-008: Comprehensive error handling
+- ✅ US-009: README with usage instructions
+
+Project is ready for testing with actual course download!
