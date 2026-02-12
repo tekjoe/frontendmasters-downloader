@@ -47,8 +47,8 @@ function saveProgress(outputDir, progress) {
  * @param {boolean} options.keepTemp - Keep temporary files after download
  */
 export async function downloadCourse(courseUrl, options) {
-  const { email, password, outputDir: customOutputDir, keepTemp = false } = options;
-  
+  const { email, password, outputDir: customOutputDir, keepTemp = false, visible = false } = options;
+
   // Check ffmpeg first
   console.log('Checking ffmpeg installation...');
   const hasFfmpeg = await checkFfmpeg();
@@ -59,10 +59,11 @@ export async function downloadCourse(courseUrl, options) {
     process.exit(1);
   }
   console.log('✅ ffmpeg found\n');
-  
+
   // Login and get browser/page
   console.log('Logging in to Frontend Masters...');
-  const { browser, page } = await login(email, password);
+  const creds = (email && password) ? { email, password } : null;
+  const { browser, page } = await login(creds, { visible });
   
   try {
     // Get course metadata
